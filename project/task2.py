@@ -52,9 +52,6 @@ def create_nfa_for_graph(
     for st in final_states:
         nfa.add_final_state(State(st))
 
-    for edge in graph.edges:
-        if edge(data="label"):
-            nfa.add_transition(State(edge[0]), Symbol(edge[2]), State(edge[1]))
-        else:
-            nfa.add_transition(State(edge[0]), Epsilon(), State(edge[1]))
+    for (fr, to, label) in graph.edges(data="label"):
+        nfa.add_transition(State(fr), Symbol(label), State(to))
     return nfa
