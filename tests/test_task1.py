@@ -1,7 +1,7 @@
 import filecmp
 import os
 
-from project.graph_utils import *
+from project.task1 import *
 
 
 def test_get_graph_info():
