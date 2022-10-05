@@ -13,8 +13,8 @@ class BoolDecomposition:
     matrix for each symbol, the mapping to each index state and the total number of states are stored.
     """
 
-    start_states: Set[int]
-    final_states: Set[int]
+    start_states: Set[State]
+    final_states: Set[State]
     bool_matrix: Dict[Any, dok_matrix]
     state_to_index: Dict[State, int]
     all_states: int
