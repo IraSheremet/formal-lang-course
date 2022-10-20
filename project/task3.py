@@ -3,7 +3,7 @@ from typing import Set, Dict, Any
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import State, EpsilonNFA
 from pyformlang.regular_expression import PythonRegex
-from scipy.sparse import dok_matrix, kron
+from scipy.sparse import lil_matrix, kron
 
 from project.task2 import *
 
@@ -15,11 +15,12 @@ class BoolDecomposition:
 
     start_states: Set[State]
     final_states: Set[State]
-    bool_matrix: Dict[Any, dok_matrix]
+    bool_matrix: Dict
     state_to_index: Dict[State, int]
     all_states: int
+    mtx_type_for_construction = lil_matrix
 
-    def __init__(self, nfa: EpsilonNFA = None):
+    def __init__(self, nfa: EpsilonNFA = None, mtx_type_for_construction=lil_matrix):
         if nfa is None:
             self.start_states = set()
             self.final_states = set()
@@ -34,8 +35,9 @@ class BoolDecomposition:
                 state: index for (index, state) in enumerate(nfa.states)
             }
             self.bool_matrix = self.create_bool_matrix_from_nfa(nfa)
+        self.mtx_type_for_construction = mtx_type_for_construction
 
-    def create_bool_matrix_from_nfa(self, nfa: EpsilonNFA) -> Dict[Any, dok_matrix]:
+    def create_bool_matrix_from_nfa(self, nfa: EpsilonNFA):
         bool_matrix = {}
         for src_st, label_trg_st in nfa.to_dict().items():
             for label, trg_st in label_trg_st.items():
@@ -43,7 +45,7 @@ class BoolDecomposition:
                     trg_st = {trg_st}
                 for st in trg_st:
                     if label not in bool_matrix:
-                        bool_matrix[label] = dok_matrix(
+                        bool_matrix[label] = self.mtx_type_for_construction(
                             (self.all_states, self.all_states), dtype=bool
                         )
                     f = self.state_to_index.get(src_st)
@@ -83,7 +85,7 @@ class BoolDecomposition:
         bool_decomposition.all_states = self.all_states * second_automaton.all_states
         return bool_decomposition
 
-    def get_transitive_closure(self) -> dok_matrix:
+    def get_transitive_closure(self):
         transitive_closure = sum(self.bool_matrix.values())
         prev = None
         curr = transitive_closure.nnz

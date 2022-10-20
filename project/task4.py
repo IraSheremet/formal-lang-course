@@ -1,11 +1,12 @@
-from scipy.sparse import block_diag, csr_matrix, vstack
+from scipy.sparse import block_diag, vstack
 
 from project.task3 import *
 
 
 def rpq(
     graph: MultiDiGraph,
-    regex: PythonRegex,
+    regex,
+    mtx_type_matrix=lil_matrix,
     start_states: Set[int] = None,
     final_states: Set[int] = None,
     is_for_each_node: bool = False,
@@ -15,19 +16,23 @@ def rpq(
     Parameters
     ----------
     graph: MultiDiGraph
-    regex: PythonRegex
+    regex
     start_states: Set[int]
     final_states: Set[int]
     is_for_each_node: bool
+    mtx_type_matrix
 
     Returns
     -------
      reachable_nodes: Set[Union[tuple[State, State], State]]
     """
     graph_bool_decomposition = BoolDecomposition(
-        create_nfa_for_graph(graph, start_states, final_states)
+        create_nfa_for_graph(graph, start_states, final_states),
+        mtx_type_for_construction=mtx_type_matrix,
     )
-    regex_bool_decomposition = BoolDecomposition(create_minimal_dfa_for_regex(regex))
+    regex_bool_decomposition = BoolDecomposition(
+        create_minimal_dfa_for_regex(regex), mtx_type_for_construction=mtx_type_matrix
+    )
     return sync_bfs(
         graph_bool_decomposition, regex_bool_decomposition, is_for_each_node
     )
@@ -36,6 +41,36 @@ def rpq(
 def sync_bfs(
     graph: BoolDecomposition, regex: BoolDecomposition, is_for_each_node: bool = False
 ) -> Set:
+    """Executes sync bfs on the automatons represented by bool matrices.
+
+    Parameters
+    ----------
+    graph: BoolDecomposition
+    regex: BoolDecomposition
+    is_for_each_node: bool = False
+
+    Returns
+    -------
+     reachable_nodes: Set[Union[tuple[State, State], State]]
+    """
+
+    def transform_rows(step1, regex_states1, is_for_each_node1):
+        result = graph.mtx_type_for_construction(step.shape, dtype=bool)
+        for row1, col1 in zip(*step1.nonzero()):
+            if col1 < regex_states1:
+                right_row_part = step1[row1, regex_states1:]
+                if right_row_part.nnz != 0:
+                    if not is_for_each_node1:
+                        result[col1, col1] = True
+                        result[col1, regex_states1:] += right_row_part
+                    else:
+                        node_number = row1 // regex_states1
+                        result[node_number * regex_states1 + col1, col1] = True
+                        result[
+                            node_number * regex_states1 + col1, regex_states1:
+                        ] += right_row_part
+        return result
+
     direct_sum = {}
     for label in graph.bool_matrix.keys() & regex.bool_matrix.keys():
         direct_sum[label] = block_diag(
@@ -47,7 +82,7 @@ def sync_bfs(
         else create_front(graph, regex, graph.start_states)
     )
 
-    visited = csr_matrix(front.shape, dtype=bool)
+    visited = graph.mtx_type_for_construction(front.shape, dtype=bool)
     is_first_step = True
     while True:
         old_visited_nnz = visited.nnz
@@ -77,10 +112,8 @@ def sync_bfs(
     return reachable_nodes
 
 
-def create_front(
-    graph: BoolDecomposition, regex: BoolDecomposition, start_states
-) -> csr_matrix:
-    front = csr_matrix(
+def create_front(graph: BoolDecomposition, regex: BoolDecomposition, start_states):
+    front = graph.mtx_type_for_construction(
         (regex.all_states, regex.all_states + graph.all_states), dtype=bool
     )
 
@@ -90,21 +123,3 @@ def create_front(
         for graph_st in start_states:
             front[i, regex.all_states + graph_st.value] = True
     return front
-
-
-def transform_rows(step: csr_matrix, regex_states, is_for_each_node) -> csr_matrix:
-    result = csr_matrix(step.shape, dtype=bool)
-    for row, col in zip(*step.nonzero()):
-        if col < regex_states:
-            right_row_part = step[row, regex_states:]
-            if right_row_part.nnz != 0:
-                if not is_for_each_node:
-                    result[col, col] = True
-                    result[col, regex_states:] += right_row_part
-                else:
-                    node_number = row // regex_states
-                    result[node_number * regex_states + col, col] = True
-                    result[
-                        node_number * regex_states + col, regex_states:
-                    ] += right_row_part
-    return result

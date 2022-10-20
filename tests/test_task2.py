@@ -1,19 +1,16 @@
-import pytest
+import cfpq_data
+import networkx as nx
 from pyformlang.finite_automaton import *
 from pyformlang.regular_expression import Regex
-import networkx as nx
-import cfpq_data
 
 from project.task2 import *
 
 
-@pytest.mark.create_minimal_dfa_for_regex
 def test_create_minimal_dfa_for_empty_regex():
     dfa = create_minimal_dfa_for_regex(Regex(""))
     assert dfa.is_empty()
 
 
-@pytest.mark.create_minimal_dfa_for_regex
 def test_create_minimal_dfa_for_regex_is_correct():
     dfa = create_minimal_dfa_for_regex(Regex("abc|d"))
     assert dfa.accepts([Symbol("d")])
@@ -22,13 +19,11 @@ def test_create_minimal_dfa_for_regex_is_correct():
     assert dfa.is_deterministic()
 
 
-@pytest.mark.create_nfa_for_graph
 def test_create_nfa_for_empty_graph():
     nfa = create_nfa_for_graph(nx.MultiDiGraph())
     assert nfa.is_empty()
 
 
-@pytest.mark.create_nfa_for_graph
 def test_create_nfa_for_graph_is_correct():
     graph = cfpq_data.labeled_two_cycles_graph(3, 3, labels=("A", "B"))
     actual_nfa = create_nfa_for_graph(graph, {0}, {5})
