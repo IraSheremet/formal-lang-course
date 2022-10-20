@@ -47,7 +47,7 @@ def sync_bfs(
     ----------
     graph: BoolDecomposition
     regex: BoolDecomposition
-    is_for_each_node: bool
+    is_for_each_node: bool = False
 
     Returns
     -------
