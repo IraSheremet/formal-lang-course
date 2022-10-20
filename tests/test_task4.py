@@ -22,7 +22,7 @@ def test_full_rpq():
 def test_rpq():
     graph = cfpq_data.labeled_two_cycles_graph(3, 3, labels=("a", "b"), common_node=0)
     regex = PythonRegex("(a|b)(aa)*")
-    result = rpq(graph, regex, {0})
+    result = rpq(graph, regex, start_states={0})
     assert result == {1, 3, 4}
 
 
