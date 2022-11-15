@@ -40,7 +40,7 @@ def cfpq(
         final_states = graph.nodes
     return {
         (i, j)
-        for (var, i, j) in hellings(graph, cfg)
+        for (i, var, j) in hellings(graph, cfg)
         if i in start_states and j in final_states and var == start_symbol
     }
 
@@ -72,24 +72,24 @@ def hellings(graph: MultiDiGraph, cfg: CFG):
     for (u, v, label) in graph.edges(data="label"):
         for prod in term_productions:
             if label == prod.body[0].value:
-                r.append((prod.head, u, v))
+                r.append((u, prod.head, v))
     for n in graph.nodes:
         for prod in eps_productions:
-            r.append((prod.head, n, n))
+            r.append((n, prod.head, n))
     m = r.copy()
     while m:
-        (N, v, u) = m.pop(0)
-        for (M, x, y) in r:
+        (v, N, u) = m.pop(0)
+        for (x, M, y) in r:
             if y == v:
                 for prod in non_term_productions:
-                    new_triple = (prod.head, x, u)
+                    new_triple = (x, prod.head, u)
                     if prod.body[0] == M and prod.body[1] == N and new_triple not in r:
                         m.append(new_triple)
                         r.append(new_triple)
-        for (M, x, y) in r:
+        for (x, M, y) in r:
             if x == u:
                 for prod in non_term_productions:
-                    new_triple = (prod.head, v, y)
+                    new_triple = (v, prod.head, y)
                     if prod.body[0] == N and prod.body[1] == M and new_triple not in r:
                         m.append(new_triple)
                         r.append(new_triple)
