@@ -1,10 +1,35 @@
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG, Variable
 
-from project.task9 import cfpq, hellings
+from project.task9 import cfpq_hellings, hellings
 
 
-def test_cfpq_example():
+def check_cfpq(algo_res, cfpq_res):
+    expected_hellings = {
+        (0, Variable("A"), 1),
+        (1, Variable("A"), 2),
+        (2, Variable("A"), 0),
+        (2, Variable("B"), 3),
+        (3, Variable("B"), 2),
+        (1, Variable("S"), 3),
+        (1, Variable("Q"), 2),
+        (0, Variable("S"), 2),
+        (0, Variable("Q"), 3),
+        (2, Variable("S"), 3),
+        (2, Variable("Q"), 2),
+        (1, Variable("S"), 2),
+        (1, Variable("Q"), 3),
+        (0, Variable("S"), 3),
+        (0, Variable("Q"), 2),
+        (2, Variable("S"), 2),
+        (2, Variable("Q"), 3),
+    }
+    expected_cfpq = {(1, 2), (0, 3), (2, 3), (0, 2), (2, 2), (1, 3)}
+    assert algo_res == expected_hellings
+    assert cfpq_res == expected_cfpq
+
+
+def test_cfpq_hellings():
     text = """
         S -> A B
         S -> A Q
@@ -24,25 +49,7 @@ def test_cfpq_example():
             (3, 2, {"label": "b"}),
         ]
     )
-    expected_hellings = [
-        (0, Variable("A"), 1),
-        (1, Variable("A"), 2),
-        (2, Variable("A"), 0),
-        (2, Variable("B"), 3),
-        (3, Variable("B"), 2),
-        (1, Variable("S"), 3),
-        (1, Variable("Q"), 2),
-        (0, Variable("S"), 2),
-        (0, Variable("Q"), 3),
-        (2, Variable("S"), 3),
-        (2, Variable("Q"), 2),
-        (1, Variable("S"), 2),
-        (1, Variable("Q"), 3),
-        (0, Variable("S"), 3),
-        (0, Variable("Q"), 2),
-        (2, Variable("S"), 2),
-        (2, Variable("Q"), 3),
-    ]
-    expected_cfpq = {(1, 2), (0, 3), (2, 3), (0, 2), (2, 2), (1, 3)}
-    assert hellings(graph, cfg) == expected_hellings
-    assert cfpq(graph, cfg, start_symbol=Variable("S")) == expected_cfpq
+    check_cfpq(
+        algo_res=set(hellings(graph, cfg)),
+        cfpq_res=cfpq_hellings(graph, cfg, start_symbol=Variable("S")),
+    )
