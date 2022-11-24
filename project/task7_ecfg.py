@@ -19,7 +19,7 @@ class ECFG:
 
 
 def ecfg_from_cfg(cfg: CFG):
-    """Create a extended context-free grammar from the context-free grammar.
+    """Create an extended context-free grammar from the context-free grammar.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def ecfg_from_cfg(cfg: CFG):
         The equivalent extended context-free grammar.
     """
     productions = {}
-    for prod in cfg.productions:
+    for _, prod in enumerate(cfg.productions):
         regex = Regex(
             " ".join([x.to_text() for x in prod.body] if len(prod.body) > 0 else "$")
         )
