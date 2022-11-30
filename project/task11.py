@@ -110,11 +110,12 @@ def tensor(graph: MultiDiGraph, cfg: CFG):
     res = set()
     for (var, mtx) in graph_decomposed.bool_matrix.items():
         for (i, j) in zip(*mtx.nonzero()):
-            res.add(
-                (
-                    graph_decomposed.index_to_state[i],
-                    var,
-                    graph_decomposed.index_to_state[j],
+            if isinstance(var, Variable):
+                res.add(
+                    (
+                        graph_decomposed.index_to_state[i],
+                        var,
+                        graph_decomposed.index_to_state[j],
+                    )
                 )
-            )
     return res

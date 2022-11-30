@@ -1,8 +1,9 @@
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
 
-from project.task11 import cfpq_tensor
+from project.task11 import cfpq_tensor, tensor
 from project.task7_rsm import *
+from tests.test_task9 import check_cfpq
 
 
 def test_cfpq_tensor():
@@ -25,5 +26,7 @@ def test_cfpq_tensor():
             (3, 2, {"label": "b"}),
         ]
     )
-    expected_cfpq = {(1, 2), (0, 3), (2, 3), (0, 2), (2, 2), (1, 3)}
-    assert cfpq_tensor(graph, cfg, start_symbol=Variable("S")) == expected_cfpq
+    check_cfpq(
+        algo_res=tensor(graph, cfg),
+        cfpq_res=cfpq_tensor(graph, cfg, start_symbol=Variable("S")),
+    )
