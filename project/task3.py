@@ -26,6 +26,7 @@ class BoolDecomposition:
             self.final_states = set()
             self.bool_matrix = {}
             self.state_to_index = {}
+            self.index_to_state = {}
             self.all_states = 0
         else:
             self.start_states = nfa.start_states
@@ -33,6 +34,9 @@ class BoolDecomposition:
             self.all_states = len(nfa.states)
             self.state_to_index = {
                 state: index for (index, state) in enumerate(nfa.states)
+            }
+            self.index_to_state = {
+                index: state for index, state in enumerate(nfa.states)
             }
             self.bool_matrix = self.create_bool_matrix_from_nfa(nfa)
         self.mtx_type_for_construction = mtx_type_for_construction
