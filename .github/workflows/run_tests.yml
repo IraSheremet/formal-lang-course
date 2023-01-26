@@ -49,7 +49,7 @@ jobs:
 
       - name: Generate parser
         working-directory: project/gql
-        run: antlr4 -Dlanguage=Python3 GQL.g4
+        run: antlr4 -Dlanguage=Python3 GQL.g4 -visitor
 
       # Run tests
       - name: Run tests

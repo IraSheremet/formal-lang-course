@@ -2,7 +2,7 @@ from typing import Set, Dict, Any
 
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import State, EpsilonNFA
-from pyformlang.regular_expression import PythonRegex
+from pyformlang.regular_expression import PythonRegex, Regex
 from scipy.sparse import lil_matrix, kron
 
 from project.task2 import *
@@ -102,7 +102,7 @@ class BoolDecomposition:
 
 def regular_path_querying(
     graph: MultiDiGraph,
-    regex: PythonRegex,
+    regex: Regex,
     start_states: Set[int] = None,
     final_states: Set[int] = None,
 ) -> Set:
@@ -131,4 +131,18 @@ def regular_path_querying(
                     State(j // regex_bool_decomposition.all_states),
                 )
             )
+    return result
+
+
+def regular_path_querying_for_interpreter(graph: EpsilonNFA) -> Set:
+    graph_bool_decomposition = BoolDecomposition(graph)
+    transitive_closure = graph_bool_decomposition.get_transitive_closure()
+    result = set()
+    s_st, f_st = transitive_closure.nonzero()
+    for i, j in zip(s_st, f_st):
+        if (
+            i in graph_bool_decomposition.start_states
+            and j in graph_bool_decomposition.final_states
+        ):
+            result.add(State(j))
     return result

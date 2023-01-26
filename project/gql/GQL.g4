@@ -3,12 +3,11 @@ grammar GQL;
 prog:	(stmt NEWLINE?)* EOF ;
 
 stmt:   var '=' expr LINE_END
-    |   'print' expr LINE_END
+    |   PRINT expr LINE_END
     ;
 
-var:    initial_letter string ;
-initial_letter: IDENTIFIER_CHAR ;
-string: (initial_letter | '/' | '.' | INT)* ;
+var:    IDENTIFIER_CHAR string ;
+string: (IDENTIFIER_CHAR | '/' | '.' | INT)* ;
 
 
 expr:	LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
@@ -63,7 +62,6 @@ edges:  'get_edges' LEFT_PARENTHESIS graph RIGHT_PARENTHESIS
     |   EMPTY_SET
     ;
 
-
 lambda: 'fun' LEFT_PARENTHESIS var RIGHT_PARENTHESIS LEFT_CURLY_BRACE expr RIGHT_CURLY_BRACE ;
 map:    'map' LEFT_PARENTHESIS lambda COMMA expr RIGHT_PARENTHESIS ;
 filter: 'filter' LEFT_PARENTHESIS lambda COMMA expr RIGHT_PARENTHESIS ;
@@ -73,6 +71,7 @@ concat      :   'concat' LEFT_PARENTHESIS expr COMMA expr RIGHT_PARENTHESIS ;
 union       :   'union' LEFT_PARENTHESIS expr COMMA expr RIGHT_PARENTHESIS ;
 star        :   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS '*' ;
 
+PRINT: 'print' ;
 COMMA: ',' ;
 QUOTE: '"' ;
 LEFT_CURLY_BRACE: '{';
