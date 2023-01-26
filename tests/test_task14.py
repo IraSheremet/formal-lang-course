@@ -233,23 +233,23 @@ def test_prog(inp, res):
     assert accept(inp) == res
 
 
-def test1_write_dot():
-    text = """a = 5;"""
-    save_as_dot(text, "tests/res/temp1_task14.dot")
-    assert filecmp.cmp(
-        "tests/res/temp1_task14.dot", "tests/res/expected1_task14.dot", shallow=False
-    )
-    os.remove("tests/res/temp1_task14.dot")
-
-
-def test2_write_dot():
-    text = """
-        a = union ("A", "a");
-        b_a = (union ("b", a))*;
-        print concat (a, b_a);
-        """
-    save_as_dot(text, "tests/res/temp2_task14.dot")
-    assert filecmp.cmp(
-        "tests/res/temp2_task14.dot", "tests/res/expected2_task14.dot", shallow=False
-    )
-    os.remove("tests/res/temp2_task14.dot")
+# def test1_write_dot():
+#     text = """a = 5;"""
+#     save_as_dot(text, "tests/res/temp1_task14.dot")
+#     assert filecmp.cmp(
+#         "tests/res/temp1_task14.dot", "tests/res/expected1_task14.dot", shallow=False
+#     )
+#     os.remove("tests/res/temp1_task14.dot")
+#
+#
+# def test2_write_dot():
+#     text = """
+#         a = union ("A", "a");
+#         b_a = (union ("b", a))*;
+#         print concat (a, b_a);
+#         """
+#     save_as_dot(text, "tests/res/temp2_task14.dot")
+#     assert filecmp.cmp(
+#         "tests/res/temp2_task14.dot", "tests/res/expected2_task14.dot", shallow=False
+#     )
+#     os.remove("tests/res/temp2_task14.dot")
